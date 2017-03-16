@@ -78,7 +78,7 @@ namespace Pankow_ColorConverter_Labs
             
             if (!e.Cancelled)
             {
-                tmpUndo = false;
+               // tmpUndo = false;
                 Bitmap tmpImage = (Bitmap)(pictureBox1.Image);
                 pictureBox1.Image = image;
                 if (tmpUndo == false)
@@ -89,6 +89,7 @@ namespace Pankow_ColorConverter_Labs
                 else
                 {
                     pictureBox1.Image = tmpImage;
+                    tmpUndo = false;
                 }
                 pictureBox1.Refresh();
 

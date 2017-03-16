@@ -10,26 +10,27 @@ namespace Pankow_ColorConverter_Labs
 {
     abstract class Filters
     {
-       
+
 
         protected bool tmpKludge = false;//нужно для оптимизации
-        protected int R_ = 0; protected int G_ = 0; protected int B_ = 0;protected int counterI=0;protected int counterJ=0;//для "Серого мира"
+        protected BackgroundWorker tmpWorker;
+        protected int R_ = 0; protected int G_ = 0; protected int B_ = 0; protected int counterI = 0; protected int counterJ = 0;//для "Серого мира"
         protected int Rmax = 0; protected int Gmax = 0; protected int Bmax = 0; protected int Rmin = 0; protected int Gmin = 0; protected int Bmin = 0;//для "Линейного растяжения" и "Мат.морфологии"
         protected Random rand = new Random(1/*int)DateTime.Now.Ticks*/);//Для "Стекла"
-        protected int[,] StructuralElement; protected int MW = 0; protected int MH = 0; protected int radiusW=0; protected int radiusH=0; protected Bitmap tmpImage; protected bool tmpKludgeMatMorf = false; protected Bitmap tmpImageGrad; protected bool tmpKludgeMatMorfGradDil = false; protected bool tmpKludgeMatMorfGradEro = false;//Для мат морфологии
+        protected int[,] StructuralElement; protected int MW = 0; protected int MH = 0; protected int radiusW = 0; protected int radiusH = 0; protected Bitmap tmpImage; protected bool tmpKludgeMatMorf = false; protected Bitmap tmpImageGrad; protected bool tmpKludgeMatMorfGradDil = false; protected bool tmpKludgeMatMorfGradEro = false;//Для мат морфологии
         protected abstract Color calculateNewPixelColor(Bitmap sourseImage, int x, int y);
 
         public Bitmap processImage(Bitmap sourseImage, BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourseImage.Width, sourseImage.Height);
-            for (int i = 0; i < sourseImage.Width ; i++)
+            for (int i = 0; i < sourseImage.Width; i++)
             {
                 worker.ReportProgress((int)((float)i / resultImage.Width * 100));
                 if (worker.CancellationPending)
                 {
                     return null;
                 }
-                for (int j = 0; j < sourseImage.Height ; j++)
+                for (int j = 0; j < sourseImage.Height; j++)
                 {
                     resultImage.SetPixel(i, j, calculateNewPixelColor(sourseImage, i, j));
                 }
@@ -56,19 +57,19 @@ namespace Pankow_ColorConverter_Labs
 
         public void GetStructuralElement()
         {
-           /* StructuralElement = new int[3, 3];
-            StructuralElement[0, 0] = 1;
-            StructuralElement[0, 1] = 1;
-            StructuralElement[0, 2] = 1;
-            StructuralElement[1, 0] = 1;
-            StructuralElement[1, 1] = 1;
-            StructuralElement[1, 2] = 1;
-            StructuralElement[2, 0] = 1;
-            StructuralElement[2, 1] = 1;
-            StructuralElement[2, 2] = 1;
-            MW = StructuralElement.GetLength(0);
-            MH = StructuralElement.GetLength(1);
-            */
+            /* StructuralElement = new int[3, 3];
+             StructuralElement[0, 0] = 1;
+             StructuralElement[0, 1] = 1;
+             StructuralElement[0, 2] = 1;
+             StructuralElement[1, 0] = 1;
+             StructuralElement[1, 1] = 1;
+             StructuralElement[1, 2] = 1;
+             StructuralElement[2, 0] = 1;
+             StructuralElement[2, 1] = 1;
+             StructuralElement[2, 2] = 1;
+             MW = StructuralElement.GetLength(0);
+             MH = StructuralElement.GetLength(1);
+             */
             /*
             StreamReader StructuralElementText = new StreamReader("StuctElem.txt");
             int sizeStirng = StructuralElementText.ReadToEnd().;
@@ -102,7 +103,7 @@ namespace Pankow_ColorConverter_Labs
             }*/
             string[] linesStructuralElement = File.ReadAllLines(@"StuctElem.txt");
             int sizeStirng = linesStructuralElement[1].Length;
-            if(sizeStirng==0)
+            if (sizeStirng == 0)
             {
                 StructuralElement = new int[3, 3];
                 StructuralElement[0, 0] = 1;
@@ -126,10 +127,10 @@ namespace Pankow_ColorConverter_Labs
                 string[] str = linesStructuralElement[i].Trim().Split(' ');
                 for (int j = 0; j < MH; j++)
                 {
-                    StructuralElement[i,j] = Clamp(int.Parse(str[j].Trim()),0,1);
+                    StructuralElement[i, j] = Clamp(int.Parse(str[j].Trim()), 0, 1);
                 }
             }
-            A:
+        A:
             radiusH = (int)(MH / 2);
             radiusW = (int)(MW / 2);
         }
@@ -308,7 +309,7 @@ namespace Pankow_ColorConverter_Labs
             int tmpR = Clamp((int)((int)(sourceColor.R) - Rmin) * (255 / (Rmax - Rmin)) + sourceColor.R, 0, 255);
             int tmpG = Clamp((int)((int)(sourceColor.G) - Gmin) * (255 / (Gmax - Gmin)) + sourceColor.G, 0, 255);
             int tmpB = Clamp((int)((int)(sourceColor.B) - Bmin) * (255 / (Bmax - Bmin)) + sourceColor.B, 0, 255);
-            Color resultColor = Color.FromArgb(tmpR , tmpG , tmpB );
+            Color resultColor = Color.FromArgb(tmpR, tmpG, tmpB);
             return resultColor;
         }
 
@@ -370,14 +371,14 @@ namespace Pankow_ColorConverter_Labs
     {
         protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
         {
-           /* Random randX = new Random((int)DateTime.Now.Ticks);
-              float tmpRandX = (float)(rand.Next(10));
-              float tmpX_2 = (float)((float)(randX.Next(10)) / 10f - 0.5f);
-              int tmpX_1 = (int)(x - 10 * (float)((float)(randX.Next(10)) / 10f - 0.5f));
+            /* Random randX = new Random((int)DateTime.Now.Ticks);
+               float tmpRandX = (float)(rand.Next(10));
+               float tmpX_2 = (float)((float)(randX.Next(10)) / 10f - 0.5f);
+               int tmpX_1 = (int)(x - 10 * (float)((float)(randX.Next(10)) / 10f - 0.5f));
 
-              Random randY = new Random(int)DateTime.Now.Ticks);
-              float tmpY_2 = (float)((float)(randY.Next(10)) / 10f - 0.5f);
-              int tmpY_1 = (int)(y - 10 * (float)((float)(randY.Next(10)) / 10f - 0.5f));*/
+               Random randY = new Random(int)DateTime.Now.Ticks);
+               float tmpY_2 = (float)((float)(randY.Next(10)) / 10f - 0.5f);
+               int tmpY_1 = (int)(y - 10 * (float)((float)(randY.Next(10)) / 10f - 0.5f));*/
             int tmpX = Clamp((int)(x - 10 * (float)((float)(rand.Next(10)) / 10f - 0.5f)), 0, sourseImage.Width - 1);
             int tmpY = Clamp((int)(y - 10 * (float)((float)(rand.Next(10)) / 10f - 0.5f)), 0, sourseImage.Height - 1);
 
@@ -386,13 +387,13 @@ namespace Pankow_ColorConverter_Labs
         }
     }
 
-    class MedianFilter : Filters 
+    class MedianFilter : Filters
     {
         protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
         {
             int radius = 3;
             int pixelInspection = (radius * 2 + 1) * (radius * 2 + 1);
-            int tmpI=0;
+            int tmpI = 0;
             int[] arrayR = new int[pixelInspection];
             int[] arrayG = new int[pixelInspection];
             int[] arrayB = new int[pixelInspection];
@@ -400,7 +401,7 @@ namespace Pankow_ColorConverter_Labs
             {
                 for (int j = y - radius; j < y + radius; j++)
                 {
-                    Color tmpPixel = sourseImage.GetPixel(Clamp(i, 0, (sourseImage.Width-1)), Clamp(j, 0, (sourseImage.Height-1)));
+                    Color tmpPixel = sourseImage.GetPixel(Clamp(i, 0, (sourseImage.Width - 1)), Clamp(j, 0, (sourseImage.Height - 1)));
                     arrayR[tmpI] = (int)(tmpPixel.R);
                     int tmp = arrayR[tmpI];
                     arrayG[tmpI] = (int)(tmpPixel.G);
@@ -411,9 +412,9 @@ namespace Pankow_ColorConverter_Labs
                 }
             }
 
-           Array.Sort(arrayR);
-           Array.Sort(arrayG);
-           Array.Sort(arrayB);
+            Array.Sort(arrayR);
+            Array.Sort(arrayG);
+            Array.Sort(arrayB);
 
             int averageValue = (int)(pixelInspection / 2) + 1;
 
@@ -534,7 +535,7 @@ namespace Pankow_ColorConverter_Labs
             kernel[2, 0] = -1;
             kernel[2, 1] = -1;
             kernel[2, 2] = -1;
-
+  
         }
     }
 
@@ -582,8 +583,8 @@ namespace Pankow_ColorConverter_Labs
             kernel[2, 1] = 1;
         }
     }
-    
-    class DilationFilter:Filters
+
+    class DilationFilter : Filters
     {
         protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
         {
@@ -607,13 +608,13 @@ namespace Pankow_ColorConverter_Labs
     {
         protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
         {
-            
+
             if (tmpKludgeMatMorf == false)
             {
                 tmpImage = new Bitmap(sourseImage.Width, sourseImage.Height);
                 for (int i = 0; i < tmpImage.Width; i++)
                 {
-                    for (int j = 0; j < tmpImage.Height ; j++)
+                    for (int j = 0; j < tmpImage.Height; j++)
                     {
                         GetErosion(sourseImage, i, j);
                         tmpImage.SetPixel(i, j, Color.FromArgb(Rmin, Gmin, Bmin));
@@ -655,7 +656,7 @@ namespace Pankow_ColorConverter_Labs
     {
         protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
         {
-            
+
             if (tmpKludgeMatMorfGradDil == false)
             {
                 tmpImage = new Bitmap(sourseImage.Width, sourseImage.Height);
@@ -692,10 +693,10 @@ namespace Pankow_ColorConverter_Labs
                 resultColor = tmpImage.GetPixel(x, y);
             }*/
             return resultColor;
-           
+
         }
     }
 
 
-   
+
 }
